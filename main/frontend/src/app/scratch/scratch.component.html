@@ -1,0 +1,69 @@
+<p>
+  Rrefresh Data
+  <button (click)="onRefreshClicked()">Click me to refresh the data</button><br/>
+  <small *ngIf="users">We loaded the following users from the database at {{loadedAt}}</small>
+</p>
+
+<h2>Einkaufsprotokoll</h2>
+<table>
+  <tr>
+    <th>Produkt</th>
+    <th>User</th>
+    <th>Datum</th>
+    <th>Preis</th>
+  </tr>
+
+  <ng-container *ngIf="users && productRows">
+    <tr *ngFor="let pr of productRows;">
+      <td>{{pr.product}}</td>
+      <td>{{getUserById(pr.userId).username}}</td>
+      <td>{{pr.date}}</td>
+      <td>{{pr.price}} CHF</td>
+      <td><button (click)="onDeleteRow(pr)">X</button></td>
+      <td><button (click)="onEditRow(pr)">Edit</button></td>
+    </tr>
+  </ng-container>
+
+  <hr />
+  <tr>
+    <td>Total:</td>
+    <td></td>
+    <td></td>
+    <td>{{calcTotal()}} CHF</td>
+    <td></td>
+    <td></td>
+  </tr>
+
+
+</table>
+
+<h3>Ändern/Hinzufügen</h3>
+<form *ngIf="users" ngController="ScratchComponent">
+  <label>Produkt:<input type="text" [(ngModel)]="currentRow.product" name="product" [required]/></label> <br/>
+  <label>User:
+    <select [(ngModel)]="currentRow.userId" name="userId" [required]>
+      <option *ngFor="let user of users" [ngValue]="user.id">{{user.username}}</option>
+    </select>
+  </label><br/>
+  <label>Datum: <input type="date" [(ngModel)]="currentRow.date" name="date" [required]/></label>  <br/>
+  <label>Preis: <input type="number" [(ngModel)]="currentRow.price" name="price" [required] [min]="0.05"/></label>   <br/>
+  <input type="button" (click)="submitRow()"  value="speichern"/>
+</form>
+
+<p></p>
+<hr />
+<p></p>
+
+<table>
+  <tr>
+    <th>User</th>
+    <th>Ausgaben</th>
+  </tr>
+  <tr *ngFor="let user of users">
+    <td>{{user.username}}</td>
+    <td *ngIf="productRows">{{calcTotalForUser(user.id)}} CHF</td>
+  </tr>
+  <tr>
+    <td colspan="2"><button (click)="onEqualize()">clear debts</button> </td>
+  </tr>
+</table>
